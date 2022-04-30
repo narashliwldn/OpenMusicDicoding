@@ -3,17 +3,11 @@ const routes = (handler) => [
     method: 'POST',
     path: '/albums',
     handler: handler.postAlbumHandler,
-    options: {
-      auth: 'openmusicapp_jwt',
-    },
   },
   {
     method: 'GET',
     path: '/albums',
     handler: handler.getAlbumsHandler,
-    options: {
-      auth: 'openmusicapp_jwt',
-    },
   },
   {
     method: 'GET',
