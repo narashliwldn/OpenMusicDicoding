@@ -2,7 +2,7 @@ const { nanoid } = require('nanoid');
 const { Pool } = require('pg');
 const InvariantError = require('../../exceptions/InvariantError');
 const NotFoundError = require('../../exceptions/NotFoundError');
-const { mapDBToModelPlaylist, mapDBToModelSong } = require('../../utils');
+const { mapDBToModelPlaylist } = require('../../utils');
 const AuthorizationError = require('../../exceptions/AuthorizationError');
 
 class PlaylistsService {
@@ -32,7 +32,7 @@ class PlaylistsService {
 
   async getPlaylists(owner) {
     const query = {
-      text: 'SELECT playlists.id, playlists.name, users.username FROM playlists LEFT JOIN users ON playlists.owner = users.id LEFT JOIN collaborations ON playlists.id = collaborations.playlist_id WHERE playlists.owner = $1 OR collaborations.user_id = $1',
+      text: 'SELECT playlists.id, playlists.name, users.username FROM playlist_songs LEFT JOIN playlists ON playlists.id = playlist_id LEFT JOIN users ON users.id = playlists.owner WHERE playlists.id = $1',
       values: [owner],
     };
 
@@ -42,12 +42,12 @@ class PlaylistsService {
 
   async getPlaylistById(id) {
     const query = {
-      text: 'SELECT playlists.id, playlists.name, users.username FROM playlists LEFT JOIN users ON playlists.owner = users.id LEFT JOIN collaborations ON playlists.id = collaborations.playlist_id WHERE playlists.id = $1 ',
+      text: 'SELECT playlists.id, playlists.name, users.username FROM playlist_songs LEFT JOIN playlists ON playlists.id = playlist_id LEFT JOIN users ON users.id = playlists.owner WHERE playlists.id = $1',
       values: [id],
     };
 
     const result = await this._pool.query(query);
-    if (!result.rows.length) {
+    if (!result.rowCount) {
       throw new NotFoundError('Playlist tidak ditemukan');
     }
 
@@ -76,19 +76,19 @@ class PlaylistsService {
 
     const result = await this._pool.query(query);
 
-    if (!result.rows[0].id) {
+    if (!result.rows.length) {
       throw new InvariantError('Lagu gagal ditambahkan ke dalam playlist');
     }
   }
 
   async getSongsFromPlaylist(playlistId) {
     const query = {
-      text: 'SELECT songs.id, songs.title, songs.performer FROM songs JOIN playlist_songs ON songs.id = playlist_songs.song_id WHERE playlist_songs.playlist_id = $1',
+      text: 'SELECT songs.id, songs.title, songs.performer FROM playlist_songs LEFT JOIN songs ON playlist_songs.song_id = songs.id WHERE playlist_songs.playlist_id = $1',
       values: [playlistId],
     };
 
     const result = await this._pool.query(query);
-    return result.rows.map(mapDBToModelSong);
+    return result.rows;
   }
 
   async deleteSongFromPlaylist(playlistId, songId) {

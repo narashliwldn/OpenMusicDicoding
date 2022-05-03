@@ -1,4 +1,4 @@
-const mapDBToModelAlbum = ({ id, name, year }) => ({ id, name, year });
+// const mapDBToModelAlbum = ({ id, name, year }) => ({ id, name, year });
 
 const mapDBToModelSong = ({
   id,
@@ -28,23 +28,24 @@ const mapDBToModelUsers = ({
 });
 
 const mapDBToModelPlaylist = ({
-  id, name, owner,
+  id, name, owner, username,
 }) => ({
-  id, name, owner,
+  id, name, owner, username,
 });
 
 const mapDBToModelPlaylistSongs = ({
   id,
   playlist_id,
   song_id,
+  username,
 }) => ({
   id,
   playlistId: playlist_id,
   songId: song_id,
+  username,
 });
 
 module.exports = {
-  mapDBToModelAlbum,
   mapDBToModelSong,
   mapDBToModelUsers,
   mapDBToModelPlaylist,
