@@ -1,6 +1,7 @@
 class AlbumsHandler {
-  constructor(service, validator) {
-    this._service = service;
+  constructor(albumsService, songsService, validator) {
+    this._albumsService = albumsService;
+    this._songsService = songsService;
     this._validator = validator;
 
     this.postAlbumHandler = this.postAlbumHandler.bind(this);
@@ -13,7 +14,7 @@ class AlbumsHandler {
   async postAlbumHandler({ payload }, h) {
     this._validator.validateAlbumPayload(payload);
 
-    const albumId = await this._service.addAlbum(payload);
+    const albumId = await this._albumsService.addAlbum(payload);
 
     const response = h.response({
       status: 'success',
@@ -27,7 +28,7 @@ class AlbumsHandler {
   }
 
   async getAlbumsHandler() {
-    const albums = await this._service.getAlbums();
+    const albums = await this._albumsService.getAlbums();
     return {
       status: 'success',
       data: {
@@ -38,8 +39,8 @@ class AlbumsHandler {
 
   async getAlbumByIdHandler({ params }) {
     const { id } = params;
-    const album = await this._service.getAlbumById(id);
-    const songs = await this._service.getAllSongsByAlbumId(id);
+    const album = await this._albumsService.getAlbumById(id);
+    const songs = await this._songsService.getSongsFromAlbum(id);
 
     if (songs) {
       album.songs = songs;
@@ -64,7 +65,7 @@ class AlbumsHandler {
     const { id } = request.params;
     const { name, year } = request.payload;
 
-    await this._service.editAlbumById(id, { name, year });
+    await this._albumsService.editAlbumById(id, { name, year });
 
     return {
       status: 'success',
@@ -74,7 +75,7 @@ class AlbumsHandler {
 
   async deleteAlbumByIdHandler({ params }) {
     const { id } = params;
-    await this._service.deleteAlbumById(id);
+    await this._albumsService.deleteAlbumById(id);
     return {
       status: 'success',
       message: 'Album berhasil dihapus',
