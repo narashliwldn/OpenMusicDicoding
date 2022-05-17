@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const Hapi = require('@hapi/hapi');
 const Jwt = require('@hapi/jwt');
+const Inert = require('@hapi/inert');
 
 const songs = require('./api/songs');
 const SongsService = require('./services/postgres/SongsService');
@@ -30,8 +31,12 @@ const collaborations = require('./api/collaborations');
 const CollaborationsService = require('./services/postgres/CollaborationsService');
 const CollaborationsValidator = require('./validator/collaborations');
 
-const playlistsSongActivities = require('./api/playlist_song_activities');
-const PlaylistsSongActivitiesService = require('./services/postgres/PlaylistSongActivitiesService');
+const playlistSongActivities = require('./api/playlist_song_activities');
+const PlaylistSongActivitiesService = require('./services/postgres/PlaylistSongActivitiesService');
+
+const _exports = require('./api/exports');
+const ProducerService = require('./services/rabbitmq/ProducerService');
+const ExportsValidator = require('./validator/exports');
 
 const init = async () => {
   const albumsService = new AlbumsService();
@@ -40,7 +45,7 @@ const init = async () => {
   const authenticationsService = new AuthenticationsService();
   const collaborationsService = new CollaborationsService();
   const playlistsService = new PlaylistsService(collaborationsService);
-  const playlistsSongActivitiesService = new PlaylistsSongActivitiesService();
+  const playlistSongActivitiesService = new PlaylistSongActivitiesService();
 
   const server = Hapi.server({
     port: process.env.PORT,
@@ -55,6 +60,9 @@ const init = async () => {
   await server.register([
     {
       plugin: Jwt,
+    },
+    {
+      plugin: Inert,
     },
   ]);
 
@@ -95,7 +103,7 @@ const init = async () => {
       options: {
         playlistsService,
         songsService,
-        playlistsSongActivitiesService,
+        playlistSongActivitiesService,
         validator: PlaylistsValidator,
       },
     },
@@ -125,10 +133,18 @@ const init = async () => {
       },
     },
     {
-      plugin: playlistsSongActivities,
+      plugin: playlistSongActivities,
       options: {
         playlistsService,
-        playlistsSongActivitiesService,
+        playlistSongActivitiesService,
+      },
+    },
+    {
+      plugin: _exports,
+      options: {
+        ProducerService,
+        playlistsService,
+        validator: ExportsValidator,
       },
     },
   ]);

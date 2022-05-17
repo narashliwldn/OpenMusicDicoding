@@ -45,20 +45,20 @@ class PlaylistsHandler {
     };
   }
 
-  async getPlaylistByIdHandler(request) {
-    const { id } = request.params;
-    const { id: credentialId } = request.auth.credentials;
+  // async getPlaylistByIdHandler(request) {
+  //   const { id } = request.params;
+  //   const { id: credentialId } = request.auth.credentials;
 
-    await this._playlistsService.verifyPlaylistAccess(id, credentialId);
-    const playlist = await this._playlistsService.getPlaylistById(id);
+  //   await this._playlistsService.verifyPlaylistAccess(id, credentialId);
+  //   const playlist = await this._playlistsService.getPlaylistById(id);
 
-    return {
-      status: 'success',
-      data: {
-        playlist,
-      },
-    };
-  }
+  //   return {
+  //     status: 'success',
+  //     data: {
+  //       playlist,
+  //     },
+  //   };
+  // }
 
   async deletePlaylistByIdHandler(request) {
     const { id } = request.params;

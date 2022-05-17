@@ -17,7 +17,7 @@ class PlaylistSongActivities {
 
     const result = await this._pool.query(query);
 
-    return result.rows[0].id;
+    return result.rowCount;
   }
 
   async getActivityByPlaylistId(id) {
