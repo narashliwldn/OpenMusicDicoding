@@ -77,6 +77,18 @@ class AlbumsService {
       throw new Error('Album tidak ditemukan');
     }
   }
+
+  async addAlbumCover(id, cover) {
+    const query = {
+      text: 'UPDATE albums SET cover = $1 WHERE id = $2 RETURNING id',
+      values: [cover, id],
+    };
+
+    const result = await this._pool.query(query);
+    if (!result.rows.length) {
+      throw new NotFoundError('Gagal menambahkan sampul album. Id tidak ditemukan');
+    }
+  }
 }
 
 module.exports = AlbumsService;

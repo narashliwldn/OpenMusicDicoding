@@ -3,6 +3,8 @@ class ExportsHandler {
     this._producerService = producerService;
     this._playlistsService = playlistsService;
     this._validator = validator;
+
+    this.postExportPlaylistSongsHandler = this.postExportPlaylistSongsHandler.bind(this);
   }
 
   async postExportPlaylistSongsHandler(request, h) {
@@ -11,7 +13,7 @@ class ExportsHandler {
     const { playlistId } = request.params;
     const { id: credentialId } = request.auth.credentials;
 
-    await this._playlistsService.verifyPlaylistOwner(credentialId, playlistId);
+    await this._playlistsService.verifyPlaylistOwner(playlistId, credentialId);
 
     const message = {
       playlistId,
