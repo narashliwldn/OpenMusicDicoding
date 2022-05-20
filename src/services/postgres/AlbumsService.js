@@ -71,13 +71,13 @@ class AlbumsService {
     }
   }
 
-  async verifyAlbumId(id) {
-    try {
-      await this.getAlbumById(id);
-    } catch (error) {
-      throw new Error('Album tidak ditemukan');
-    }
-  }
+  // async verifyAlbumId(id) {
+  //   try {
+  //     await this.getAlbumById(id);
+  //   } catch (error) {
+  //     throw new Error('Album tidak ditemukan');
+  //   }
+  // }
 
   async addAlbumCover({ id, cover }) {
     const query = {

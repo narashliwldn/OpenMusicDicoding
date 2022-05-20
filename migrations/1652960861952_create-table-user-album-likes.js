@@ -1,5 +1,5 @@
 exports.up = (pgm) => {
-  pgm.addTable('user_album_likes', {
+  pgm.createTable('user_album_likes', {
     id: {
       type: 'VARCHAR(50)',
       primaryKey: true,
@@ -14,7 +14,7 @@ exports.up = (pgm) => {
     },
   });
 
-  pgm.addConstraint('user_album_likes', 'unique_user_id_and_album_id', 'UNIQUE(user_id, "albumId")');
+  pgm.addConstraint('user_album_likes', 'unique_user_id_and_album_id', 'UNIQUE(user_id, album_id)');
 };
 
 exports.down = (pgm) => {
